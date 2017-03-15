@@ -59,11 +59,12 @@ designer = ModelDesigner(100)
 # Adding a block
 designer.add_block('classifier')
 # 300 neurons
-designer.add_fc_block(-1)
+designer.add_fc_block(300)
 # Dropout
 designer.add_drop(0.5)
 # 100 neurons
-# you can use either mentioned way to specify the number of neurons for this block
+# you can use either mentioned way to specify the number of neurons for this block.
+# If you use -1 as an argument, the layer will have 300 neurons, as in the previous layer.
 designer.add_fc_block(100)
 # Dropout
 designer.add_drop(0.2)
