@@ -1,4 +1,10 @@
 class ModelDesigner:
+    """
+    This class allows painfully design Torch 7 sequential models.
+    The implementation is based on few stacks.
+
+    (c) Aleksei Tiulpin
+    """
     def __init__(self, dim=None, imsize=None):
         self.__model = [] # Here we add teh model itself
         self.__fmaps = [] # This list controls the number of feature maps or neurons for FC layers
