@@ -84,7 +84,7 @@ class ModelDesigner:
             print 'ERROR!!!!! Float outputs from layer', len(self.__inps)
             print "============================"
 
-        self.__model.append("features:add(nn.SpatialConvolution({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}))\nfeatures:add(nn.SpatialBatchNormalization({1}, {12}))\nfeatures:add(nn.LeakyReLU({13},true)) -- {8}x{9} -> {10}x{11}".format(self.__fmaps[-1], nout, kw,kh,sw,sh,pw,ph, int(self.__inps[-1][0]), int(self.__inps[-1][1]), int(out[0]), int(out[1]), bnpar, leakyrelu))
+        self.__model.append("{0}::add(nn.SpatialConvolution({1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}))\n{0}:add(nn.SpatialBatchNormalization({2}, {13}))\nfeatures:add(nn.LeakyReLU({14}true)) -- {9}x{10} -> {11}x{12}".format(self.__blocks[-1], self.__fmaps[-1], nout, kw,kh,sw,sh,pw,ph, int(self.__inps[-1][0]), int(self.__inps[-1][1]), int(out[0]), int(out[1]), bnpar, leakyrelu))
         self.__fmaps.append(nout)
         self.__inps.append(out)
 
@@ -107,7 +107,7 @@ class ModelDesigner:
             print "============================"
 
 
-        self.__model.append('features:add(nn.SpatialMaxPooling({0}, {1})) -- {2}x{3} -> {4}x{5}'.format(pw, ph, int(self.__inps[-1][0]), int(self.__inps[-1][1]), int(out[0]), int(out[1])))
+        self.__model.append('{0}:add(nn.SpatialMaxPooling({1}, {2})) -- {3}x{4} -> {5}x{6}'.format(self.__blocks[-1], pw, ph, int(self.__inps[-1][0]), int(self.__inps[-1][1]), int(out[0]), int(out[1])))
         self.__inps.append(out)
 
     def add_drop(self,prob):
