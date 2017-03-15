@@ -56,8 +56,6 @@ class ModelDesigner:
         Declares network Sequential block
 
         """
-        if len(self.__inps) == 0 or len(self.__fmaps) == 0:
-            raise ValueError('Specify the number of input dimensions and the image size!')
         self.__model.append('local {} = nn.Sequential()'.format(block))
         self.__blocks.append(block)
 
