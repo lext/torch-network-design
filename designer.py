@@ -84,7 +84,7 @@ class ModelDesigner:
             print 'ERROR!!!!! Float outputs from layer', len(self.__inps)
             print "============================"
 
-        self.__model.append("{0}::add(nn.SpatialConvolution({1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}))\n{0}:add(nn.SpatialBatchNormalization({2}, {13}))\nfeatures:add(nn.LeakyReLU({14}true)) -- {9}x{10} -> {11}x{12}".format(self.__blocks[-1], self.__fmaps[-1], nout, kw,kh,sw,sh,pw,ph, int(self.__inps[-1][0]), int(self.__inps[-1][1]), int(out[0]), int(out[1]), bnpar, leakyrelu))
+        self.__model.append("{0}::add(nn.SpatialConvolution({1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}))\n{0}:add(nn.SpatialBatchNormalization({2}, {13}))\n{0}:add(nn.LeakyReLU({14},true)) -- {9}x{10} -> {11}x{12}".format(self.__blocks[-1], self.__fmaps[-1], nout, kw,kh,sw,sh,pw,ph, int(self.__inps[-1][0]), int(self.__inps[-1][1]), int(out[0]), int(out[1]), bnpar, leakyrelu))
         self.__fmaps.append(nout)
         self.__inps.append(out)
 
