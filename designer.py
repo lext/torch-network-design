@@ -1,63 +1,59 @@
 class ModelDesigner:
-    model = [] # Here we add teh model itself
-    fmaps = [] # This list controls the number of feature maps or neurons for FC layers
-    inps = [] # This list controls the number of inputs on the current layer
-    blocks = [] # Here we control the blocks: e.g. features followed by classifier
+    def __init__(self, dim=None, imsize=None):
+        self.__model = [] # Here we add teh model itself
+        self.__fmaps = [] # This list controls the number of feature maps or neurons for FC layers
+        self.__inps = [] # This list controls the number of inputs on the current layer
+        self.__blocks = [] # Here we control the blocks: e.g. features followed by classifier
+
+        if imsize is not None:
+            self.set_imsize(imsize)
+
+        if dim is not None:
+            self.set_channels(dim)
+
 
     def set_channels(self, n_channels):
         """
         Channels has to be an integer number
         """
-        self.fmaps.append(n_channels)
+        self.__fmaps.append(n_channels)
 
     def set_imsize(self, imsize):
         """
         imsize is a tuple of integers WxH
         """
-        self.inps.append(imsize)
+        self.__inps.append(imsize)
 
     def render(self, onlymodel=False):
         """
         Renders the model according to Torch 7 specifications.
 
         """
+        if len(self.__inps) == 0 or len(self.__fmaps) == 0:
+            raise ValueError('Specify the number of input dimensions and the image size!')
         print
         if not onlymodel:
             print "==> Torch model:"
             print "========================"
         # Adding all the blocks to the model
-        self.model = self.model +['model = nn.Sequential()'+''.join([':add({})'.format(block_name) for block_name in self.blocks])]
-        print '\n\n'.join(self.model)
+        self.__model = self.__model +['model = nn.Sequential()'+''.join([':add({})'.format(block_name) for block_name in self.__blocks])]
+        print '\n\n'.join(self.__model)
 
         if not onlymodel:
             print "========================"
-            for inp in self.inps:
+            for inp in self.__inps:
                 print inp
 
-    def add_features(self):
+
+    def add_block(self, block):
         """
-        Declares features block
+        Declares network Sequential block
 
         """
-        self.model.append('features = nn.Sequential()')
-        self.blocks.append('features')
-
-    def add_classifier(self):
-        """
-        Declares classifier block
-
-        """
-        self.model.append('classifer = nn.Sequential()')
-        self.blocks.append('classifier')
-
-    def add_regressor(self):
-        """
-        Declares regressor block. Only the name is different from classifier
-
-        """
-
-        self.model.append('regressor = nn.Sequential()')
-        self.blocks.append('regressor')
+        if len(self.__inps) == 0 or len(self.__fmaps) == 0:
+            raise ValueError('Specify the number of input dimensions and the image size!')
+        self.__model.append('local {} = nn.Sequential()'.format(block))
+        self.__blocks.append(block)
 
     def add_conv_block(self,nout, kw, kh, sw, sh, pw, ph, bnpar=1e-3, leakyrelu=0.1):
         """
@@ -75,16 +71,18 @@ class ModelDesigner:
             leakyrelu: Leaky ReLU coefficient
 
         """
-        out = (float(self.inps[-1][0]+2*pw-kw)/sw+1, float(self.inps[-1][0]+2*ph-kh)/sh+1)
+        if len(self.__inps) == 0 or len(self.__fmaps) == 0:
+            raise ValueError('Specify the number of input dimensions and the image size!')
+        out = (float(self.__inps[-1][0]+2*pw-kw)/sw+1, float(self.__inps[-1][0]+2*ph-kh)/sh+1)
 
         if (not out[0].is_integer()) or (not out[1].is_integer()):
             print "============================"
-            print 'ERROR!!!!! Float outputs from layer', len(self.inps)
+            print 'ERROR!!!!! Float outputs from layer', len(self.__inps)
             print "============================"
 
-        self.model.append("features:add(nn.SpatialConvolution({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}))\nfeatures:add(nn.SpatialBatchNormalization({1}, {12}))\nfeatures:add(nn.LeakyReLU({13},true)) -- {8}x{9} -> {10}x{11}".format(self.fmaps[-1], nout, kw,kh,sw,sh,pw,ph, int(self.inps[-1][0]), int(self.inps[-1][1]), int(out[0]), int(out[1]), bnpar, leakyrelu))
-        self.fmaps.append(nout)
-        self.inps.append(out)
+        self.__model.append("features:add(nn.SpatialConvolution({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}))\nfeatures:add(nn.SpatialBatchNormalization({1}, {12}))\nfeatures:add(nn.LeakyReLU({13},true)) -- {8}x{9} -> {10}x{11}".format(self.__fmaps[-1], nout, kw,kh,sw,sh,pw,ph, int(self.__inps[-1][0]), int(self.__inps[-1][1]), int(out[0]), int(out[1]), bnpar, leakyrelu))
+        self.__fmaps.append(nout)
+        self.__inps.append(out)
 
     def add_pool(self, pw=2,ph=2):
         """
@@ -94,18 +92,19 @@ class ModelDesigner:
             pw: Horizontal pooling
             ph: Vertical pooling
         """
+        if len(self.__inps) == 0 or len(self.__fmaps) == 0:
+            raise ValueError('Specify the number of input dimensions and the image size!')
 
-
-        out = (self.inps[-1][0]*1./pw, self.inps[-1][1]*1./ph)
+        out = (self.__inps[-1][0]*1./pw, self.__inps[-1][1]*1./ph)
 
         if (not out[0].is_integer()) or (not out[1].is_integer()):
             print "============================"
-            print 'ERROR!!!!! Float outputs from layer', len(self.inps)
+            print 'ERROR!!!!! Float outputs from layer', len(self.__inps)
             print "============================"
 
 
-        self.model.append('features:add(nn.SpatialMaxPooling({0}, {1})) -- {2}x{3} -> {4}x{5}'.format(pw, ph, int(self.inps[-1][0]), int(self.inps[-1][1]), int(out[0]), int(out[1])))
-        self.inps.append(out)
+        self.__model.append('features:add(nn.SpatialMaxPooling({0}, {1})) -- {2}x{3} -> {4}x{5}'.format(pw, ph, int(self.__inps[-1][0]), int(self.__inps[-1][1]), int(out[0]), int(out[1])))
+        self.__inps.append(out)
 
     def add_drop(self,prob):
         """
@@ -114,37 +113,58 @@ class ModelDesigner:
         Args:
             prob: Dropout probabilty parameter
         """
-        self.model.append('{}:add(nn.Dropout({}))'.format(self.blocks[-1], prob))
+        if len(self.__inps) == 0 or len(self.__fmaps) == 0:
+            raise ValueError('Specify the number of input dimensions and the image size!')
+        self.__model.append('{}:add(nn.Dropout({}))'.format(self.__blocks[-1], prob))
+        self.__fmaps.append(self.__fmaps[-1])
+        self.__inps.append(self.__inps[-1])
 
     def add_view(self):
         """
         Vew layer. Automaticaly calculates the outputs.
 
         """
-        nout = int(self.fmaps[-1]*self.inps[-1][0]*self.inps[-1][1])
-        self.model.append('{}:add(nn.View({}))'.format(self.blocks[-1], nout))
-        self.fmaps.append(nout)
-        self.inps.append(nout)
+        if len(self.__inps) == 0 or len(self.__fmaps) == 0:
+            raise ValueError('Specify the number of input dimensions and the image size!')
+        nout = int(self.__fmaps[-1]*self.__inps[-1][0]*self.__inps[-1][1])
+        self.__model.append('{}:add(nn.View({}))'.format(self.__blocks[-1], nout))
+        self.__fmaps.append(nout)
+        self.__inps.append(nout)
 
     def add_fc_block(self, nout, bnpar=1e-3, leakyrelu=0.1):
         """
         Fully connected block: FC layer followed by batch normlization and Leaky ReLU
-        """
-        if nout == -1:
-            nout = self.fmaps[-1]
-        self.model.append("{0}:add(nn.Linear({1}, {2})\n{0}:add(nn.BatchNormalization({2}, {3}))\n{0}:add(nn.LeakyReLU({4},true))".format(self.blocks[-1], self.fmaps[-1], nout, bnpar, leakyrelu))
 
-        self.fmaps.append(nout)
-        self.inps.append(nout)
+        """
+
+        if len(self.__inps) == 0 or len(self.__fmaps) == 0:
+            raise ValueError('Specify the number of input dimensions and the image size!')
+        if nout == -1:
+            nout = self.__fmaps[-1]
+        self.__model.append("{0}:add(nn.Linear({1}, {2}))\n{0}:add(nn.BatchNormalization({2}, {3}))\n{0}:add(nn.LeakyReLU({4},true))".format(self.__blocks[-1], self.__fmaps[-1], nout, bnpar, leakyrelu))
+
+        self.__fmaps.append(nout)
+        self.__inps.append(nout)
 
     def add_fc(self, nout):
         """
         Fully connected layer without activation and batch normalization
 
         """
-        if nout == -1:
-            nout = self.fmaps[-1]
-        self.model.append("{0}:add(nn.Linear({1}, {2})".format(self.blocks[-1], self.fmaps[-1], nout))
+        if len(self.__inps) == 0 or len(self.__fmaps) == 0:
+            raise ValueError('Specify the number of input dimensions and the image size!')
 
-        self.fmaps.append(nout)
-        self.inps.append(nout)
+        if nout == -1:
+            nout = self.__fmaps[-1]
+        self.__model.append("{0}:add(nn.Linear({1}, {2}))".format(self.__blocks[-1], self.__fmaps[-1], nout))
+
+        self.__fmaps.append(nout)
+        self.__inps.append(nout)
+
+    def add_softmax(self):
+        if len(self.__inps) == 0 or len(self.__fmaps) == 0:
+            raise ValueError('Specify the number of input dimensions and the image size!')
+        self.__model.append("{0}:add(nn.LogSoftMax())".format(self.__blocks[-1]))
+
+        self.__fmaps.append(1)
+        self.__inps.append(1)
