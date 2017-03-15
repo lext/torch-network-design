@@ -143,7 +143,7 @@ class ModelDesigner:
 
         """
 
-        if len(self.__inps) == 0 or len(self.__fmaps) == 0:
+        if len(self.__fmaps) == 0:
             raise ValueError('Specify the number of input dimensions and the image size!')
         if nout == -1:
             nout = self.__fmaps[-1]
@@ -157,7 +157,7 @@ class ModelDesigner:
         Fully connected layer without activation and batch normalization
 
         """
-        if len(self.__inps) == 0 or len(self.__fmaps) == 0:
+        if len(self.__fmaps) == 0:
             raise ValueError('Specify the number of input dimensions and the image size!')
 
         if nout == -1:
@@ -168,7 +168,7 @@ class ModelDesigner:
         self.__inps.append(nout)
 
     def add_softmax(self):
-        if len(self.__inps) == 0 or len(self.__fmaps) == 0:
+        if len(self.__fmaps) == 0:
             raise ValueError('Specify the number of input dimensions and the image size!')
         self.__model.append("{0}:add(nn.LogSoftMax())".format(self.__blocks[-1]))
 
