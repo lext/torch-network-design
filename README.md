@@ -49,7 +49,7 @@ designer.add_pool(2,2)
 ### Fully-connected blocks
 Here there are 3 types of blocks that usually need to be used: *fc_block* -- linear layer followed by batch normalization and leaky ReLU, *fc* - just a linear layer and also *softmax* -- LogSoftMax layer in Torch. You need to specify the number of neurons on the given layer. This number can be -1. It will indicate that you take the same number of neurons as it was on the previous layer. Also, **when you instantiate the object, you need to set only the number of input dimensions as there is no any convolution involved!**
 
-An example to buid a simple MLP:
+An example to build a simple MLP:
 
 ```python
 from designer import ModelDesigner
