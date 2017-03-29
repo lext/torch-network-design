@@ -37,7 +37,10 @@ Parameters for batch normalization and Leaky ReLu equal to 1e-3 and 1e-1 by defa
 ```python
 designer.add_conv_block(32, 3, 3, 1, 1, 1, 1)
 ```
-If you want to have a net with normal ReLU, just specify *leakyrelu=0* and the normal ReLU will be adedd instead of LeakyReLU.
+If you want to have a net with normal ReLU, just specify *leakyrelu=0* and the normal ReLU will be adedd instead of LeakyReLU:
+```python
+designer.add_conv_block(32, 3, 3, 1, 1, 1, 1, leakyrelu=0)
+```
 
 You can also add a droupout:
 
