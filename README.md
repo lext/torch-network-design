@@ -9,6 +9,11 @@ from designer import ModelDesigner
 designer = ModelDesigner(3, (256,256))
 
 ```
+By the default, batch normalization will be added after each convolution (or basically before ReLU). If you want to change this, set the corresponding parameter *bn_first=True* in teh constructor:
+```python
+designer = ModelDesigner(3, (256,256), bn_first=True)
+```
+
 Then we must add a sequential block. In this case I will call it *features*:
 
 ```python
@@ -32,6 +37,7 @@ Parameters for batch normalization and Leaky ReLu equal to 1e-3 and 1e-1 by defa
 ```python
 designer.add_conv_block(32, 3, 3, 1, 1, 1, 1)
 ```
+If you want to have a net with normal ReLU, just specify *leakyrelu=0* and the normal ReLU will be adedd instead of LeakyReLU.
 
 You can also add a droupout:
 
@@ -43,6 +49,12 @@ And max pooling (here 2x2):
 ```python
 designer.add_pool(2,2)
 ```
+You can also specify the stride and the padding exactly the same way as it is done for convolutions:
+```python
+designer.add_pool(3,3,2,2,0,0)
+
+```
+
 
 **ATTENTION:** The number of input dimensions is controlled automatically using private class attributes! The network designer controls inputs and outputs of every layer and prints an error, if for example, the outputs are not integers.
 
