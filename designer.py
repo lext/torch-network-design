@@ -99,12 +99,12 @@ class ModelDesigner:
                 layer = bnconv+"{0}:add({14}) -- {9}x{10} -> {11}x{12}"
                 layer = layer.format(self.__blocks[-1], self.__fmaps[-1], nout, kw,kh,sw,sh,pw,ph, int(self.__inps[-1][0]), int(self.__inps[-1][1]), int(out[0]), int(out[1]), bnpar, relu)
             else:
-                layer = conv+"{0}:add({14})) -- {9}x{10} -> {11}x{12}"
+                layer = conv+"{0}:add({14}) -- {9}x{10} -> {11}x{12}"
                 layer = layer.format(self.__blocks[-1], self.__fmaps[-1], nout, kw,kh,sw,sh,pw,ph, int(self.__inps[-1][0]), int(self.__inps[-1][1]), int(out[0]), int(out[1]), bnpar, relu)
         else:
-            layer=convbn+"{0}:add({14})) -- {9}x{10} -> {11}x{12}"
+            layer=convbn+"{0}:add({14}) -- {9}x{10} -> {11}x{12}"
             layer = layer.format(self.__blocks[-1], self.__fmaps[-1], nout, kw,kh,sw,sh,pw,ph, int(self.__inps[-1][0]), int(self.__inps[-1][1]), int(out[0]), int(out[1]), bnpar, relu)
-            
+
 
         self.__model.append(layer)
         self.__fmaps.append(nout)
@@ -133,7 +133,7 @@ class ModelDesigner:
             print "============================"
 
 
-        self.__model.append('{0}:add(nn.SpatialMaxPooling({1}, {2}, {3}, {4}, {5}, {6})))) -- {7}x{8} -> {9}x{10}'.format(self.__blocks[-1], kw, kh, sw,sh,pw,ph,int(self.__inps[-1][0]), int(self.__inps[-1][1]), int(out[0]), int(out[1])))
+        self.__model.append('{0}:add(nn.SpatialMaxPooling({1}, {2}, {3}, {4}, {5}, {6})) -- {7}x{8} -> {9}x{10}'.format(self.__blocks[-1], kw, kh, sw,sh,pw,ph,int(self.__inps[-1][0]), int(self.__inps[-1][1]), int(out[0]), int(out[1])))
         self.__inps.append(out)
 
     def add_drop(self,prob):
